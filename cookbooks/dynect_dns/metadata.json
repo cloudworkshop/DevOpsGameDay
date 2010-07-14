@@ -1,0 +1,39 @@
+{
+  "recipes": {
+
+  },
+  "suggestions": {
+
+  },
+  "dependencies": {
+
+  },
+  "platforms": {
+
+  },
+  "maintainer_email": "lhagemann@dyn.com",
+  "conflicting": {
+
+  },
+  "description": "Installs/Configures dynect-dns",
+  "providing": {
+
+  },
+  "name": "dynect_dns",
+  "replacing": {
+
+  },
+  "version": "0.1.0",
+  "groupings": {
+
+  },
+  "attributes": {
+
+  },
+  "long_description": "DESCRIPTION\n===========\n\nConfigure Dynect Platform Manged DNS Services via Dyn's API\n\nBorrows heavily from `opscode/dynect` cookbook, including the superb Ruby Gem\nfrom Adam Jacob `dynect_rest`  (it's a requirement)\n\nBuilding on the Providers in `opscode/dynect` cookbook this cookbook includes\nLWRP for the advanced services in the Dynect Platform\n\nREQUIREMENTS\n============\n\nChef 0.8+.\n\nA Dynect account.\n\nThe `dynect_rest` gem. The `dynect_dns::default` recipe installs this gem  \nusing the `dynect::default` recipe. So include that in your `run_list`\n\n\nATTRIBUTES\n==========\n\nThe following attributes need to be set either in a role or on a node directly, they are not set at the cookbook level:\n\n* dynect.customer - Customer ID\n* dynect.username - Username\n* dynect.password - Password\n* dynect.zone - Zone\n* dynect.domain - Domain\n\nExample JSON:\n\n    {\n      \"dynect\": {\n        \"customer\": \"CUSTOMER\",\n        \"username\": \"USERNAME\",\n        \"password\": \"PASSWORD\",\n        \"zone\": \"ZONE\",\n        \"domain\": \"DOMAIN\"\n      }\n    }\n\nRESOURCES & PROVIDERS\n====================\n\ngslb\n____\n\nProvides actions to get and update an existing Dynect Platform Traffic Management\nservice\n\nActions:\n* :get -- retrieve the service data\n* :update_ttl -- reset the TTL for the records managed by this service\n* :update_monitor -- reset the monitoring parameters \n\nAttributes:\nAuthorization credentials\n* :username\n* :password\n* :customer\n\n\nWhat host are we working with:\n* :zone\n* :fqdn\n\n* :ttl\n\n# attrs for a monitor\n* :protocol\n* :interval\n\n\nRECIPES\n=======\n\nThis cookbook provides the following recipes.\n\ndefault\n-------\n\nThe default recipe installs Adam Jacob's `dynect_rest` gem during the Chef run's compile time to ensure it is available in the same run as utilizing the `dynect_rr` resource/provider.\n\nFURTHER READING\n===============\n\nInformation on the Dynect API:\n\n* [API](http://manage.dynect.net/elp/docs/api2/rest/index.html)\n\nDynect REST Ruby Library:\n\n* [Gem](http://rubygems.org/gems/dynect_rest)\n* [Code](http://github.com/adamhjk/dynect_rest)\n\nLICENSE AND AUTHOR\n==================\n\n- Author: Lisa Hagemann (lhagemann@dyn.com)\n- Copyright: 2010, Opscode, Inc.\n\nLicensed under the Apache License, Version 2.0 (the \"License\");\nyou may not use this file except in compliance with the License.\nYou may obtain a copy of the License at\n\n    http://www.apache.org/licenses/LICENSE-2.0\n\nUnless required by applicable law or agreed to in writing, software\ndistributed under the License is distributed on an \"AS IS\" BASIS,\nWITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.\nSee the License for the specific language governing permissions and\nlimitations under the License.\n",
+  "recommendations": {
+
+  },
+  "license": "Apache 2.0",
+  "maintainer": "Dyn Inc"
+}

@@ -1,0 +1,116 @@
+DESCRIPTION
+===========
+
+Configure Dynect Platform Manged DNS Services via Dyn's API
+
+Borrows heavily from `opscode/dynect` cookbook, including the superb Ruby Gem
+from Adam Jacob `dynect_rest`  (it's a requirement)
+
+Building on the Providers in `opscode/dynect` cookbook this cookbook includes
+LWRP for the advanced services in the Dynect Platform
+
+REQUIREMENTS
+============
+
+Chef 0.8+.
+
+A Dynect account.
+
+The `dynect_rest` gem. The `dynect_dns::default` recipe installs this gem  
+using the `dynect::default` recipe. So include that in your `run_list`
+
+
+ATTRIBUTES
+==========
+
+The following attributes need to be set either in a role or on a node directly, they are not set at the cookbook level:
+
+* dynect.customer - Customer ID
+* dynect.username - Username
+* dynect.password - Password
+* dynect.zone - Zone
+* dynect.domain - Domain
+
+Example JSON:
+
+    {
+      "dynect": {
+        "customer": "CUSTOMER",
+        "username": "USERNAME",
+        "password": "PASSWORD",
+        "zone": "ZONE",
+        "domain": "DOMAIN"
+      }
+    }
+
+RESOURCES & PROVIDERS
+====================
+
+gslb
+____
+
+Provides actions to get and update an existing Dynect Platform Traffic Management
+service
+
+Actions:
+* :get -- retrieve the service data
+* :update_ttl -- reset the TTL for the records managed by this service
+* :update_monitor -- reset the monitoring parameters 
+
+Attributes:
+Authorization credentials
+* :username
+* :password
+* :customer
+
+
+What host are we working with:
+* :zone
+* :fqdn
+
+* :ttl
+
+# attrs for a monitor
+* :protocol
+* :interval
+
+
+RECIPES
+=======
+
+This cookbook provides the following recipes.
+
+default
+-------
+
+The default recipe installs Adam Jacob's `dynect_rest` gem during the Chef run's compile time to ensure it is available in the same run as utilizing the `dynect_rr` resource/provider.
+
+FURTHER READING
+===============
+
+Information on the Dynect API:
+
+* [API](http://manage.dynect.net/elp/docs/api2/rest/index.html)
+
+Dynect REST Ruby Library:
+
+* [Gem](http://rubygems.org/gems/dynect_rest)
+* [Code](http://github.com/adamhjk/dynect_rest)
+
+LICENSE AND AUTHOR
+==================
+
+- Author: Lisa Hagemann (lhagemann@dyn.com)
+- Copyright: 2010, Opscode, Inc.
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
