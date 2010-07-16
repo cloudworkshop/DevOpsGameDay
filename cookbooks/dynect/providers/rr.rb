@@ -33,6 +33,18 @@ def load_current_resource
 
   begin
     @rr = DynectRest::Resource.new(@dyn, @new_resource.record_type, @new_resource.zone).get(@new_resource.fqdn)
+
+# let's find the ONE RR we were asked for
+	if @rr && @rr.kind_of?(Array)
+		@target = nil
+		@rr.each do |rr|
+			@new_resource.rdata.each do |key, value|
+				@target =  rr if rr[key.to_s] == value
+			end
+		end
+		@rr = @target
+	end
+
     @current_resource.fqdn(@rr.fqdn)
     @current_resource.ttl(@rr.ttl)
     @current_resource.zone(@rr.zone)
@@ -93,6 +105,7 @@ end
 def action_delete
   if @rr
     @rr.delete
+	@dyn.publish
     Chef::Log.info("Deleted #{@new_resource} from dynect")
     @updated = true
   end
