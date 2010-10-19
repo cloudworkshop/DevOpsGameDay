@@ -32,23 +32,29 @@ def load_current_resource
   @rr = nil
 
   begin
-    @rr = DynectRest::Resource.new(@dyn, @new_resource.record_type, @new_resource.zone).get(@new_resource.fqdn)
+    if !@new_resource.rdata
+      @rr = DynectRest::Resource.new(@dyn, @new_resource.record_type, @new_resource.zone).get(@new_resource.fqdn)
+    else
+      # fqdn + record_type + rdata == a unique record, hence element 0
+      # note: dynect_rest 0.3.0 gem "find" method duplicates rr in
+      # return list for each matching key,value pair, "or" logic
 
-# let's find the ONE RR we were asked for
-	if @rr && @rr.kind_of?(Array)
-		@target = nil
-		@rr.each do |rr|
-			@new_resource.rdata.each do |key, value|
-				@target =  rr if rr[key.to_s] == value
-			end
-		end
-		@rr = @target
-	end
+      @rr = DynectRest::Resource.new(@dyn, @new_resource.record_type, @new_resource.zone).find(@new_resource.fqdn, @new_resource.rdata)[0]
+    end
 
-    @current_resource.fqdn(@rr.fqdn)
-    @current_resource.ttl(@rr.ttl)
-    @current_resource.zone(@rr.zone)
-    @current_resource.rdata(@rr.rdata)
+    if @rr.kind_of?(Array)
+      Chef::Log.info("Ambiguous resource #{@new_resource} #{@new_resource.rdata.inspect} at Dynect, will not replace or delete, and update falls back to create")
+      @rr = nil
+    elsif @rr != nil
+      Chef::Log.debug("Found resource #{@new_resource} #{@new_resource.rdata.inspect} at Dynect")
+      @current_resource.fqdn(@rr.fqdn)
+      @current_resource.ttl(@rr.ttl)
+      @current_resource.zone(@rr.zone)
+      @current_resource.rdata(@rr.rdata)
+    else 
+      Chef::Log.info("Cannot find resource #{@new_resource} #{@new_resource.rdata.inspect} at Dynect")
+    end
+
   rescue DynectRest::Exceptions::RequestFailed => e
     Chef::Log.debug("Cannot find resource #{@new_resource} at Dynect")
   end
@@ -62,7 +68,7 @@ def action_create
     rr.rdata = @new_resource.rdata
     rr.save
     @dyn.publish
-    Chef::Log.info("Added #{@new_resource} to dynect")
+    Chef::Log.info("Added #{@new_resource} #{@new_resource.rdata.inspect} to dynect")
     @updated = true
   end
 end
@@ -105,8 +111,8 @@ end
 def action_delete
   if @rr
     @rr.delete
-	@dyn.publish
-    Chef::Log.info("Deleted #{@new_resource} from dynect")
+    @dyn.publish
+    Chef::Log.info("Deleted #{@new_resource} #{@new_resource.rdata.inspect} from dynect")
     @updated = true
   end
 end
