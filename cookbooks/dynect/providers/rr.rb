@@ -30,23 +30,29 @@ def load_current_resource
   @current_resource.zone(@new_resource.zone)
 
   @rr = nil
+  @target = nil
 
   begin
-    if !@new_resource.rdata
-      @rr = DynectRest::Resource.new(@dyn, @new_resource.record_type, @new_resource.zone).get(@new_resource.fqdn)
-    else
+    @rr = DynectRest::Resource.new(@dyn, @new_resource.record_type, @new_resource.zone).get(@new_resource.fqdn)
+
+	if @rr != nil && @rr.kind_of?(Array)
+      Chef::Log.debug("Ambiguous response for #{@new_resource} #{@new_resource.rdata.inspect} at Dynect, looking further")
+	  
       # fqdn + record_type + rdata == a unique record, hence element 0
       # note: dynect_rest 0.3.0 gem "find" method duplicates rr in
       # return list for each matching key,value pair, "or" logic
-
       @rr = DynectRest::Resource.new(@dyn, @new_resource.record_type, @new_resource.zone).find(@new_resource.fqdn, @new_resource.rdata)[0]
     end
 
-    if @rr.kind_of?(Array)
-      Chef::Log.info("Ambiguous resource #{@new_resource} #{@new_resource.rdata.inspect} at Dynect, will not replace or delete, and update falls back to create")
-      @rr = nil
-    elsif @rr != nil
+# at this point @rr sould be empty or a single Resource Record
+    if @rr != nil
       Chef::Log.debug("Found resource #{@new_resource} #{@new_resource.rdata.inspect} at Dynect")
+	  # is this singular rr our requested target? 
+	    @new_resource.rdata.each do |key, value|
+			@target = @rr if @rr[key.to_s] == value
+		end
+	  Chef::Log.debug(" ##### found target") if @target
+
       @current_resource.fqdn(@rr.fqdn)
       @current_resource.ttl(@rr.ttl)
       @current_resource.zone(@rr.zone)
@@ -61,7 +67,7 @@ def load_current_resource
 end
 
 def action_create
-  unless @rr
+  unless @target 
     rr = DynectRest::Resource.new(@dyn, @new_resource.record_type, @new_resource.zone)
     rr.fqdn(@new_resource.fqdn)
     rr.ttl(@new_resource.ttl) if @new_resource.ttl
