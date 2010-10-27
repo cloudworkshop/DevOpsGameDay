@@ -26,9 +26,12 @@ dynect_rr node[:hostname] do
   zone     node[:dynect][:zone]
 
   record_type "A"
-  #rdata({ "address" => node[:ipaddress] })
-  rdata({ "address" => "10.10.2.2"}) # address of the EC2 instance brought up (elastic ips)
-  fqdn "#{node[:dynect][:fqdn]}" # reserve.dyntini.com
 
+  rdata({ "address" => node[:ec2][:public_ipv4] })
+  #rdata({ "address" => node[:ipaddress] })
+  #rdata({ "address" => "10.10.2.2"}) # address of the EC2 instance brought up (elastic ips)
+  #fqdn "#{node[:dynect][:fqdn]}" # reserve.dyntini.com
+  #fqdn "reserve.dyntini.com"
+  fqdn node[:dynect][:fqdn]
   action :create
 end
