@@ -54,17 +54,18 @@ execute "untar-wordpress" do
   creates "#{node[:wordpress][:dir]}/wp-settings.php"
 end
 
-ruby_block "config file" do
-  block do
-    run_context = Chef::RunContext.new(node, {})
-    r = Chef::Resource::File.new("#{node[:wordpress][:dir]}/wp-config.php", run_context)
-    r.content(IO.read("#{node[:wordpress][:dir]}/wp-config-sample.php"))
-    r.owner("root")
-    r.group("root")
-    r.mode("0644")
-    r.run_action(:create)
-  end
-end
+
+#ruby_block "config file" do
+#  block do
+#    run_context = Chef::RunContext.new(node, {})
+#    r = Chef::Resource::File.new("#{node[:wordpress][:dir]}/wp-config.php", run_context)
+#    r.content(IO.read("#{node[:wordpress][:dir]}/wp-config-sample.php"))
+#    r.owner("root")
+#    r.group("root")
+#    r.mode("0644")
+#    r.run_action(:create)
+#  end
+#end
 
 
 remote_directory "#{node[:wordpress][:dir]}/wp-content/themes/dyntini" do
@@ -86,8 +87,10 @@ end
 
 dbmw = node.database_master.attribute?(:write) ? 1:0
 dbmr = node.database_master.attribute?(:read) ? 1:0
-dbsw = node.database_slave.attribute?(:write) ? 1:0
-dbsr = node.database_slave.attribute?(:read) ? 1:0
+if node.attribute?("database_slave")
+  dbsw = node.database_slave.attribute?(:write) ? 1:0
+  dbsr = node.database_slave.attribute?(:read) ? 1:0
+end
 
 template "#{node.wordpress.dir}/db-config.php" do
   source "db-config.php.erb"
