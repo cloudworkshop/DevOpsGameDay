@@ -18,6 +18,7 @@ default_attributes(
     "username" => "XXXXXXXXXXXXXXXXXXXXX",
     "password" => "XXXXXXXXXXXXXXXXXXXXX",
     "zone" => "dyntini.com",
-    "domain" => "dyntini.com"
+    "domain" => "dyntini.com",
+    "fqdn" => "reserve.dyntini.com"
   }
 )
