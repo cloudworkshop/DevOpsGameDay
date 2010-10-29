@@ -183,9 +183,9 @@ $wpdb->tcp_responsiveness_check = true;
  * the 'global' dataset. (Every table is in 'global' by default.)
  */
 $wpdb->add_database(array(
-        'host'     => 'db-master-<%= @region %>.internal',     // If port is other than 3306, use host:port.
-        'user'     => 'USE_NODE_ATTRIBUTE',
-        'password' => 'USE_NODE_ATTRIBUTE',
+        'host'     => 'db-master-<%= @region %>.reserve.dyntini.com',     // If port is other than 3306, use host:port.
+        'user'     => '<%= @user %>',
+        'password' => '<%= @password %>',
         'name'     => 'wordpress',
         'write'    => <%= @dbmw %>,
         'read'     => <%= @dbmr %>,
