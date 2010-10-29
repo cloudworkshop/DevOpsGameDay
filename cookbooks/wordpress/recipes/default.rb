@@ -72,10 +72,10 @@ remote_directory "#{node[:wordpress][:dir]}/wp-content/themes/dyntini" do
   source "dyntini-theme"
   owner "www-data"
   group "www-data"
-  mode "0644"
+  mode "0755"
   files_owner "www-data"
   files_group "www-data"
-  files_mode "0644"
+  files_mode "0755"
 end
 
 cookbook_file "#{node.wordpress.dir}/wp-content/db.php" do
@@ -99,6 +99,8 @@ template "#{node.wordpress.dir}/db-config.php" do
   mode "0644"
   variables(
     :region => region,
+    :user => node[:dynect][:dbuser],
+    :password => node[:dynect][:dbpassword],
     :dbmw => dbmw,
     :dbmr => dbmr,
     :dbsw => dbsw,
