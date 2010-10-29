@@ -17,7 +17,14 @@
 # limitations under the License.
 #
 
+require 'rubygems'
 include_recipe 'dynect'
+
+# Load the keys of the items in the data bag
+ips = data_bag('dynect_delete')
+
+ip = ips[0].gsub("a", ".")
+#puts ip
 
 dynect_rr node[:hostname] do
   customer node[:dynect][:customer]
@@ -26,9 +33,9 @@ dynect_rr node[:hostname] do
   zone     node[:dynect][:zone]
 
   record_type "A"
-  #rdata({ "address" => node[:ipaddress] })
-  rdata({ "address" => "10.10.1.1" }) # EC2 address that faile (elastic ips)
-  fqdn "#{node[:dynect][:fqdn]}" # reserve.dyntini.com
+  rdata({ "address" => ip }) # EC2 address that faile (elastic ips)
+  #fqdn "#{node[:dynect][:fqdn]}" # reserve.dyntini.com
+  fqdn node[:dynect][:fqdn]
 
   action :delete
 end
