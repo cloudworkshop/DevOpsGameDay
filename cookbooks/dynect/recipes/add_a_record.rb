@@ -32,6 +32,7 @@ dynect_rr node[:hostname] do
   #rdata({ "address" => "10.10.2.2"}) # address of the EC2 instance brought up (elastic ips)
   #fqdn "#{node[:dynect][:fqdn]}" # reserve.dyntini.com
   #fqdn "reserve.dyntini.com"
+  ttl 30
   fqdn node[:dynect][:fqdn]
   action :create
 end
